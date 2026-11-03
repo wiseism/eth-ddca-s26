@@ -1,0 +1,26 @@
+name: ETH DDCA Spring2026 Lab7 MIPS
+on:
+  push:
+    branches: [edidada/lab7-mips]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mars:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/check_lab7.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lab7-mips-results
+          path: lab7/results/
