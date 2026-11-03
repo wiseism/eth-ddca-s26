@@ -28,7 +28,7 @@ jobs:
           from pathlib import Path
           import re
           text=Path('original-failures.txt').read_text()
-          counts=re.search(r'(d+) tests completed withs+(d+) errors',text)
+          counts=re.search(r'([0-9]+) tests completed with +([0-9]+) errors',text)
           assert counts and int(counts[1])==1187 and int(counts[2])>=7, text
           print(counts[0])
           PY
