@@ -1,0 +1,31 @@
+{
+  "publication_kind": "official-archive-import",
+  "imported_at": "2026-11-02",
+  "evidence": "https://safari.ethz.ch/ddca/spring2026/doku.php?id=labs",
+  "archives": [
+    {
+      "directory": "lab6",
+      "url": "https://safari.ethz.ch/ddca/spring2026/lib/exe/fetch.php?media=lab6_files.zip",
+      "sha256": "e396572a3fc515e155a1397742ffa9c19316bb2f544f62d7df06b590f1d90f24",
+      "bytes": 4258
+    },
+    {
+      "directory": "lab7",
+      "url": "https://safari.ethz.ch/ddca/spring2026/lib/exe/fetch.php?media=lab7_files.zip",
+      "sha256": "8af23702ecb54544e44f89b2d50bac4b3eea25ff83eeb54f9599748b1fdcae0d",
+      "bytes": 3029410
+    },
+    {
+      "directory": "lab8",
+      "url": "https://safari.ethz.ch/ddca/spring2026/lib/exe/fetch.php?media=lab8_files.zip",
+      "sha256": "8bcd101f46d2f1a64eda7c05b3476c80a4136d9d7ed0c5bd1435e1b9fc25f7f5",
+      "bytes": 42382
+    },
+    {
+      "directory": "lab9",
+      "url": "https://safari.ethz.ch/ddca/spring2026/lib/exe/fetch.php?media=handout-files.zip",
+      "sha256": "134e21422c750256394087d1d4dd70a8b32f33d2ed8f3f58c5ff1a7f1621c308",
+      "bytes": 29608
+    }
+  ]
+}
