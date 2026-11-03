@@ -34,7 +34,9 @@ def run(name, source, delayed=False, regions=()):
     files = []
     for i, (start, words) in enumerate(regions):
         dump = OUT / f'{name}-{int(delayed)}-{i}.hex'
-        command += ['dump', f'0x{start:x}-0x{start+4*(words-1):x}', 'HexText', str(dump)]
+        # Pinned MARS 4.4 getAddressOfFirstNull(base, limit) uses an exclusive
+        # limit; MarsLaunch subtracts one word before passing it to the dumper.
+        command += ['dump', f'0x{start:x}-0x{start+4*words:x}', 'HexText', str(dump)]
         files.append(dump)
     command.append(str(source_file))
     result = subprocess.run(command, capture_output=True, text=True, timeout=30)
@@ -89,6 +91,7 @@ for delayed in (False, True):
         registers, _ = run(f'range-{i}', halt_copy(program), delayed)
         assert registers['t2'] == (a+b)*(b-a+1)//2
 summary['range_cases'] = len(ranges)*2
+print('range sum:', summary['range_cases'], 'passed', flush=True)
 
 left = [5, 16, 7, 1, 1, 13, 2, 8, 10]
 right = [4, 15, 8, 0, 2, 12, 3, 7, 11]
@@ -104,6 +107,7 @@ for delayed in (False, True):
         assert registers['t2'] == sum(differences)
         assert [registers[r] for r in ['sp', 's0', 's1', 's2', 's3']] == [12280, 0, 9, 9, 72]
 summary['sad_cases'] = len(images)*2
+print('SAD:', summary['sad_cases'], 'passed', flush=True)
 summary['official_sad'] = dict(left=left, right=right, differences=[1]*9, t2=9,
                              addresses=dict(left=0, right=36, sad=72), final_sp=12280)
 
@@ -154,6 +158,7 @@ for delayed in (False, True):
     assert batch('color', colors, 'abs_diff_color', delayed) == [sum(abs(c[i]-c[i+3]) for i in range(3)) for c in colors]
 summary['scalar_cases'] = len(pairs)*2
 summary['color_cases'] = len(colors)*2
+print('scalar/RGB:', summary['scalar_cases'], summary['color_cases'], 'passed', flush=True)
 
 vectors = [[], [0], [-7], list(range(9)), [1]*96]
 vectors += [[rng.randint(-1000, 1000) for _ in range(rng.randrange(49))] for _ in range(20)]
