@@ -30,9 +30,9 @@ reg [31:0] logicsel;
 
 reg [31:0] alu_val; //we need to declare this reg
 reg [31:0] diff;
-wire ss0;  wire ss1; wire Ss2; wire ss3;
+wire ss0; wire ss1;
 
-assign {ss0,ss1,Ss2,ss3} = aluop; // make assigns
+assign {ss1,ss0} = aluop[1:0]; // Logic function selects low two bits
 
 // define the logicfunction
 always @ (*)
@@ -49,21 +49,18 @@ begin
             logicsel = a ^ b;
     end
 
-always @ (aluop, a, b)
-    if (aluop == 4'b1010)
-    begin
-        diff <= a - b;			// calculate the difference
-        slt <= 0;				// default value
-        if (diff[31] == 1)
-            slt <= 1;			// if MSB is 1 slt is 1
-    end
+always @ (*)
+begin
+    diff = a - b;
+    slt = {31'b0, diff[31]};
+end
 
 always @ (*)
 begin
     case (aluop)
         4'b0000 : alu_val = a + b;
         4'b0010 : alu_val = a - b;
-        4'b1011 : alu_val = slt;
+        4'b1010 : alu_val = slt;
         default : alu_val = logicsel;
     endcase
 end

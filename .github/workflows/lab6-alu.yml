@@ -1,0 +1,52 @@
+name: ETH DDCA Spring2026 Lab6 ALU
+on:
+  push:
+    branches: [edidada/lab6-alu]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y iverilog yosys
+      - run: python scripts/lab6_vectors.py
+      - name: Original buggy design must be rejected
+        working-directory: lab6
+        run: |
+          iverilog -g2012 -s ALU_test -o original.vvp reference/bad_ALU.v ALU_test.v
+          if vvp original.vvp > original-failures.txt 2>&1; then
+            cat original-failures.txt
+            exit 1
+          fi
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('original-failures.txt').read_text()
+          counts=re.search(r'(d+) tests completed withs+(d+) errors',text)
+          assert counts and int(counts[1])==1187 and int(counts[2])>=7, text
+          print(counts[0])
+          PY
+      - name: Corrected design passes all oracle vectors
+        working-directory: lab6
+        run: |
+          set -o pipefail
+          iverilog -g2012 -s ALU_test -o corrected.vvp bad_ALU.v ALU_test.v
+          vvp corrected.vvp | tee corrected-results.txt
+      - name: No inferred latches
+        working-directory: lab6
+        run: yosys -p 'read_verilog bad_ALU.v; hierarchy -top bad_ALU; proc; opt; select -assert-none t:$dlatch; stat' > synthesis.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lab6-alu-results
+          path: |
+            lab6/*results.txt
+            lab6/original-failures.txt
+            lab6/synthesis.txt
+            lab6/testvectors_hex.txt
